@@ -1,0 +1,14 @@
+.DS_Store
+build/android-profile/
+app/.externalNativeBuild
+build/generated/
+build/intermediates
+.gradle/3.3/taskArtifacts
+app/src/main/libs/arm64-v8a/*.so
+app/src/main/libs/armeabi-v7a/*.so
+app/src/main/libs/x86/*.so
+app/src/main/libs/include/*.h
+build/
+.gradle/3.3/tasks/
+.idea/
+app/build
