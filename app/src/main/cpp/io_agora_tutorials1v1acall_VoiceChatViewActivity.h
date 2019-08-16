@@ -9,13 +9,27 @@ extern "C" {
 #endif
 #undef io_agora_tutorials1v1acall_VoiceChatViewActivity_PERMISSION_REQ_ID
 #define io_agora_tutorials1v1acall_VoiceChatViewActivity_PERMISSION_REQ_ID 22L
+#undef io_agora_tutorials1v1acall_VoiceChatViewActivity_BEDEBUG
+#define io_agora_tutorials1v1acall_VoiceChatViewActivity_BEDEBUG 0L
+#undef io_agora_tutorials1v1acall_VoiceChatViewActivity_CHANNELS
+#define io_agora_tutorials1v1acall_VoiceChatViewActivity_CHANNELS 2L
+#undef io_agora_tutorials1v1acall_VoiceChatViewActivity_SAMPLESPERCELL
+#define io_agora_tutorials1v1acall_VoiceChatViewActivity_SAMPLESPERCELL 960L
 /*
  * Class:     io_agora_tutorials1v1acall_VoiceChatViewActivity
- * Method:    pushAudioData
- * Signature: ([BIII)V
+ * Method:    enableAudioPreProcessing
+ * Signature: (Z)V
  */
-JNIEXPORT void JNICALL Java_io_agora_tutorials1v1acall_VoiceChatViewActivity_pushAudioData
-  (JNIEnv *, jobject, jbyteArray, jint, jint, jint);
+JNIEXPORT void JNICALL Java_io_agora_tutorials1v1acall_VoiceChatViewActivity_enableAudioPreProcessing
+  (JNIEnv *, jobject, jboolean);
+
+/*
+ * Class:     io_agora_tutorials1v1acall_VoiceChatViewActivity
+ * Method:    audioDataPara
+ * Signature: (II)V
+ */
+JNIEXPORT void JNICALL Java_io_agora_tutorials1v1acall_VoiceChatViewActivity_audioDataPara
+  (JNIEnv *, jobject, jint, jint);
 
 #ifdef __cplusplus
 }

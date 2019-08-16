@@ -31,8 +31,16 @@
 
 #define LOG_TAG  "self-Debug"
 
+typedef  struct AudioFramePara{
+    int channel_num;
+    int freq;
+} AudioFramePara_t;
+
 static pthread_t tidp;
 static pthread_attr_t at;
+static  AudioFramePara_t para;
+
+static bool fileIOenable = false;
 
 class AgoraAudioFrameObserver : public agora::media::IAudioFrameObserver {
 
@@ -236,6 +244,16 @@ public:
 static agora::rtc::IRtcEngine* rtcEngine = NULL;
 static AgoraAudioFrameObserver *s_audioFrameObserver;
 
+void *pushExternalData1(void *ptr)
+{
+    do {
+        AudioFramePara_t *val = (AudioFramePara_t *) ptr;
+        LOG("beck  para.channel_num：%d, para.freq:%d", val->channel_num, val->freq);
+        usleep(10000); //10ms
+    }while (fileIOenable);
+    return ((void *)0);
+}
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -251,16 +269,27 @@ void __attribute__((visibility("default"))) unloadAgoraRtcEnginePlugin(agora::rt
 	rtcEngine = NULL;
 }
 
-JNIEXPORT void JNICALL Java_io_agora_tutorials1v1acall_VoiceChatViewActivity_pushAudioData
-        (JNIEnv *env, jobject, jbyteArray buffer, jint bufferLength, jint sampleRateInHz,
-         jint channels) {
+//JNIEXPORT void JNICALL Java_io_agora_tutorials1v1acall_VoiceChatViewActivity_pushAudioData
+//        (JNIEnv *env, jobject, jbyteArray buffer, jint bufferLength, jint sampleRateInHz,
+//         jint channels) {
+//
+//    if (!s_audioFrameObserver)
+//        return;
+//
+//    void *pcm = env->GetPrimitiveArrayCritical(buffer, NULL);
+//    s_audioFrameObserver->pushExternalData(pcm, bufferLength, sampleRateInHz, channels);
+//    env->ReleasePrimitiveArrayCritical(buffer, pcm, 0);
+//}
+
+JNIEXPORT void JNICALL Java_io_agora_tutorials1v1acall_VoiceChatViewActivity_audioDataPara
+        (JNIEnv *, jobject,  jint sampleRateInHz, jint channels){
 
     if (!s_audioFrameObserver)
         return;
 
-    void *pcm = env->GetPrimitiveArrayCritical(buffer, NULL);
-    s_audioFrameObserver->pushExternalData(pcm, bufferLength, sampleRateInHz, channels);
-    env->ReleasePrimitiveArrayCritical(buffer, pcm, 0);
+    para.channel_num = channels;
+    para.freq = sampleRateInHz;
+    LOG("beck  para.channel_num：%d, para.freq:%d", para.channel_num, para.freq);
 }
 
 JNIEXPORT void JNICALL Java_io_agora_tutorials1v1acall_VoiceChatViewActivity_enableAudioPreProcessing
@@ -270,16 +299,15 @@ JNIEXPORT void JNICALL Java_io_agora_tutorials1v1acall_VoiceChatViewActivity_ena
 
       agora::util::AutoPtr<agora::media::IMediaEngine> mediaEngine;
       mediaEngine.queryInterface(rtcEngine, agora::AGORA_IID_MEDIA_ENGINE);
-        LOG("beck xxxxx");
       if (mediaEngine) {
           if (enable) {
+              fileIOenable = enable;
               s_audioFrameObserver = new AgoraAudioFrameObserver();
               mediaEngine->registerAudioFrameObserver(s_audioFrameObserver);
-//              if ((pthread_create(&tidp, NULL, , NULL)) == -1)
-//              {
-//                  printf("create error!\n");
-//                  return 1;
-//              }
+              if ((pthread_create(&tidp, &at, pushExternalData1, (void*)&para) == -1))
+              {
+                  printf("create error!\n");
+              }
 
           } else {
               delete s_audioFrameObserver;

@@ -111,6 +111,7 @@ public class VoiceChatViewActivity extends AppCompatActivity {
     {
         // Self Recording
         enableAudioPreProcessing(true);
+        audioDataPara(sampleRateInHz,CHANNELS);
 
         initAudio();
 //        record();
@@ -320,5 +321,7 @@ public class VoiceChatViewActivity extends AppCompatActivity {
     }
 
     public native void enableAudioPreProcessing(boolean enable);
+    public native void audioDataPara(int sampleRateInHz, int channels);
 //    public native void pushAudioData(byte[] buffer, int bufferLength, int sampleRateInHz, int channels);
+
 }
