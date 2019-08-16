@@ -113,7 +113,7 @@ public class VoiceChatViewActivity extends AppCompatActivity {
         enableAudioPreProcessing(true);
 
         initAudio();
-        record();
+//        record();
     }
 
     private void initAgoraEngineAndJoinChannel() {
@@ -222,7 +222,7 @@ public class VoiceChatViewActivity extends AppCompatActivity {
             mRtcEngine = RtcEngine.create(getBaseContext(), getString(R.string.agora_app_id), mRtcEventHandler);
 
             mRtcEngine.setParameters("{\"rtc.log_filter\": 65535}");
-            mRtcEngine.setParameters("{\"che.audio.external_capture\":true}");
+//            mRtcEngine.setParameters("{\"che.audio.external_capture\":true}");
             //mRtcEngine.setParameters("{\"che.audio.external_render\":false}");
 
             /*
@@ -295,7 +295,7 @@ public class VoiceChatViewActivity extends AppCompatActivity {
                     audioRecord.startRecording();//开始录音
                     while (isRecording) {
                         int bufferReadResult = audioRecord.read(buffer, 0, bufferSize);
-                        pushAudioData(buffer, bufferReadResult, sampleRateInHz, CHANNELS);
+//                        pushAudioData(buffer, bufferReadResult, sampleRateInHz, CHANNELS);
                         if(BEDEBUG) {
                             dos.write(buffer, 0, bufferReadResult);
                         }
@@ -320,5 +320,5 @@ public class VoiceChatViewActivity extends AppCompatActivity {
     }
 
     public native void enableAudioPreProcessing(boolean enable);
-    public native void pushAudioData(byte[] buffer, int bufferLength, int sampleRateInHz, int channels);
+//    public native void pushAudioData(byte[] buffer, int bufferLength, int sampleRateInHz, int channels);
 }

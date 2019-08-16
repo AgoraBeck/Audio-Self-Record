@@ -31,6 +31,8 @@
 
 #define LOG_TAG  "self-Debug"
 
+static pthread_t tidp;
+static pthread_attr_t at;
 
 class AgoraAudioFrameObserver : public agora::media::IAudioFrameObserver {
 
@@ -75,6 +77,9 @@ public:
         (void) pthread_mutexattr_settype(&attr, PTHREAD_MUTEX_RECURSIVE);
         (void) pthread_mutex_init(&mutex, &attr);
 
+        pthread_attr_init(&at);
+        pthread_attr_setdetachstate(&at, PTHREAD_CREATE_DETACHED);
+
         #ifdef PUSH_DEBUG
         if (NULL == pushFp){
             pushFp = fopen("/sdcard/test.pcm", "w");
@@ -99,6 +104,7 @@ public:
     ~AgoraAudioFrameObserver(){
         pthread_mutex_destroy(&mutex);
         pthread_mutexattr_destroy(&attr);
+        pthread_attr_destroy(&at);
     }
 
 
@@ -141,7 +147,7 @@ public:
 
     // copy byteBuffer to audioFrame.buffer
     virtual bool onRecordAudioFrame(AudioFrame &audioFrame) override {
-
+        return true;
 
         LOG(" 3,availableBytes :%d, readIndex:%d", availableBytes, readIndex);
         if (availableBytes < SAMPLESPERCELL*2) {
@@ -264,11 +270,17 @@ JNIEXPORT void JNICALL Java_io_agora_tutorials1v1acall_VoiceChatViewActivity_ena
 
       agora::util::AutoPtr<agora::media::IMediaEngine> mediaEngine;
       mediaEngine.queryInterface(rtcEngine, agora::AGORA_IID_MEDIA_ENGINE);
-
+        LOG("beck xxxxx");
       if (mediaEngine) {
           if (enable) {
               s_audioFrameObserver = new AgoraAudioFrameObserver();
               mediaEngine->registerAudioFrameObserver(s_audioFrameObserver);
+//              if ((pthread_create(&tidp, NULL, , NULL)) == -1)
+//              {
+//                  printf("create error!\n");
+//                  return 1;
+//              }
+
           } else {
               delete s_audioFrameObserver;
               mediaEngine->registerAudioFrameObserver(NULL);
