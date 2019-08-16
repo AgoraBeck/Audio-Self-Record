@@ -195,7 +195,6 @@ public class VoiceChatViewActivity extends AppCompatActivity {
 //        }else{
 //            mRtcEngine.stopAudioMixing();
 //        }
-
     }
 
     // Tutorial Step 5
@@ -252,6 +251,7 @@ public class VoiceChatViewActivity extends AppCompatActivity {
     // Tutorial Step 3
     private void leaveChannel() {
         if(null != mRtcEngine)
+            enableAudioPreProcessing(false);
             mRtcEngine.leaveChannel();
     }
 
@@ -322,6 +322,4 @@ public class VoiceChatViewActivity extends AppCompatActivity {
 
     public native void enableAudioPreProcessing(boolean enable);
     public native void audioDataPara(int sampleRateInHz, int channels);
-//    public native void pushAudioData(byte[] buffer, int bufferLength, int sampleRateInHz, int channels);
-
 }
