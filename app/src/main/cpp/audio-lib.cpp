@@ -101,7 +101,6 @@ public:
         pthread_mutexattr_destroy(&attr);
     }
 
-
     // push audio data to special buffer(Array byteBuffer). Date length in byte
     void pushExternalData(void *data, int bytes, int fs, int ch)
     {
@@ -143,7 +142,7 @@ public:
     virtual bool onRecordAudioFrame(AudioFrame &audioFrame) override {
 
 
-        LOG(" 3,availableBytes :%d, readIndex:%d", availableBytes, readIndex);
+        LOG(" 3,availableBytes :%d, readIndex:%d,audioFrame.samples:%d", availableBytes, readIndex,audioFrame.samples);
         if (availableBytes < SAMPLESPERCELL*2) {
             LOG(" 4  ");
             return false;
@@ -165,20 +164,23 @@ public:
             memcpy(audioFrame.buffer, tmp, readBytes);
         } else if (channels == 1 && audioFrame.channels == 2) {
             LOG(" 1");
-            char *from = tmp;
-            char *to = static_cast<char *>(audioFrame.buffer);
-            size_t size = readBytes / sizeof(char);
+            int16_t *from = reinterpret_cast<int16_t *>(tmp);
+            int16_t *to = static_cast<int16_t *>(audioFrame.buffer);
+            size_t size = readBytes / 2;
             for (size_t i = 0; i < size; ++i) {
                 to[2 * i] = from[i];
                 to[2 * i + 1] = from[i];
             }
+
         } else if (channels == 2 && audioFrame.channels == 1) {
-            char *from = tmp;
-            char *to = static_cast<char *>(audioFrame.buffer);
-            size_t size = readBytes / sizeof(char) / channels;
+            int16_t *from = reinterpret_cast<int16_t *>(tmp);
+            int16_t *to = static_cast<int16_t *>(audioFrame.buffer);
+            size_t size = readBytes / 2 / channels;
             for (size_t i = 0; i < size; ++i) {
-                to[i] = from[2 * i];
+                to[i] = ((int32_t)from[2 * i] + (int32_t)from[2 * i + 1]) >> 1;
             }
+
+
         }
         pthread_mutex_unlock(&mutex);
 
